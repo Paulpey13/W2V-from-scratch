@@ -1,0 +1,50 @@
+espagne madrid france paris
+france paris espagne madrid
+marseille paris barcelonne madrid
+italie rome france paris
+france paris italie rome
+allemagne berlin angleterre londres
+ville pays pays continent
+neige montagne plage mer
+Portugal Lisbonne Espagne Madrid
+Suisse Bern Allemagne Berlin
+Grèce Athènes Italie Rome
+Pays-Bas Amsterdam Belgique Bruxelles
+Suède Stockholm Norvège Oslo
+Autriche Vienne Hongrie Budapest
+Canada Toronto États-Unis New York
+Australie Sydney Nouvelle-Zélande Auckland
+Japon Tokyo Corée Séoul
+Chine Pékin Russie Moscou
+Mumbai Inde Islamabad Pakistan
+Casablanca Maroc Alger Algérie
+Syrie Damas Jordanie Amman
+Turquie Istanbul Grèce Athènes
+Irlande Dublin Royaume-Uni Londres
+Allemagne Munich Autriche Vienne
+Paris France Berlin Allemagne
+Madrid Espagne Lisbonne Portugal
+Ottawa Canada Canberra Australie
+Tokyo Japon Séoul Corée du Sud
+Barcelone Espagne Milan Italie
+Sydney Australie Vancouver Canada
+Mumbai Inde Karachi Pakistan
+Caire Égypte Casablanca Maroc
+Kenya Afrique Thaïlande Asie
+Argentine Amérique du Sud Finlande Europe
+Australie Océanie Islande Europe
+Égypte Afrique Indonésie Asie
+Athènes Grèce Helsinki Finlande
+Dublin Irlande Oslo Norvège
+Rome Italie Madrid Espagne
+Budapest Hongrie Prague République Tchèque
+Copenhague Danemark Stockholm Suède
+Mexique Mexico États-Unis Washington
+Éthiopie Addis-Abeba Érythrée Asmara
+Laos Vientiane Cambodge Phnom Penh
+Bangladesh Dhaka Myanmar Naypyidaw
+Philippines Manille Vietnam Hanoï
+Bulgarie Sofia Roumanie Bucarest
+Colombie Bogotá Vénézuela Caracas
+Ouganda Kampala Rwanda Kigali
+paris montmartre marseille vieux-Port
