@@ -8,9 +8,9 @@ This project was made Paul Peyssard and Idir Saidi for the NLP project of the Ma
 
 This repository contains a Python implementation of the Word2Vec algorithm using negative sampling and gradient descent. The implementation is focused on the text from "Le Comte de Monte Cristo" by Alexandre Dumas.
 
-The script includes the processes of text tokenization, embedding initialization, loss function calculation, training the model with stochastic gradient descent, and evaluating the word embeddings using cosine similarity.
+The script includes the processes of text tokenization, embedding initialization, loss function calculation, training the model with stochastic gradient descent, and evaluating the word embeddings using cosine similarity. 
 
-The second part is about words analogy and how to find those using vector computations.
+The second part is about words analogy and how to find those using vector computations. The corpus to find the analogies can be found at http://vectors.nlpl.eu/repository/ (French CoNLL17 corpus, number 43).
 
 ## Requirements
 
