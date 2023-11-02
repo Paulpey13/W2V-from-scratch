@@ -6,7 +6,9 @@ import re
 from collections import defaultdict, Counter
 import matplotlib.pyplot as plt
 import time
-# import kd_tree as kd #fichier kd_tree.py
+# import kd_tree as kd
+
+
 
 #################################### -- Read files -- ####################################
 
@@ -170,6 +172,18 @@ params = {
 
 #################################### -- Charger le fichier d'emebedding précedement créer  -- ####################################
 
+# def load_embeddings(embeddings_file):
+#     # Charger les embeddings depuis le fichier
+#     embeddings = {}
+#     with open(embeddings_file, 'r', encoding='ISO-8859-1') as f:
+#         next(f)  # Ignorer la première ligne
+#         for line in f:
+#             parts = line.strip().split(' ')
+#             word = parts[0]
+#             embedding = np.array([float(x) for x in parts[1:]])
+#             embeddings[word] = embedding
+#     return embeddings
+
 import numpy as np
 
 def load_embeddings(embeddings_file):
@@ -267,38 +281,87 @@ def euclidean_distance(vec1, vec2):
     return np.linalg.norm(vec1 - vec2)
 
 
-#################################### -- Premère fonction pour trouver les analogies -- ####################################
-#################################### -- (Je vais test une autre avec des kd-tree, plus efficace) -- ####################################
+#################################### -- Premère fonction poru trouver les analogies -- ####################################
+#################################### -- (Je vais en faire une autres avec des kd-tree, plus efficace) -- ####################################
 
+import numpy as np
 
+class KDNode:
+    def __init__(self, point, left=None, right=None):
+        self.point = point
+        self.left = left
+        self.right = right
+
+def build_kdtree(points, depth=0):
+    if len(points) == 0:
+        return None
+    
+    k = len(points[0])
+    axis = depth % k
+    
+    points.sort(key=lambda x: x[axis])
+    median = len(points) // 2
+    
+    return KDNode(
+        point=points[median],
+        left=build_kdtree(points[:median], depth + 1),
+        right=build_kdtree(points[median + 1:], depth + 1)
+    )
+
+def closest_point(root, target, depth=0, best=None):
+    if root is None:
+        return best
+
+    k = len(target)
+    axis = depth % k
+
+    next_best = None
+    next_branch = None
+
+    if best is None or np.linalg.norm(np.array(best.point) - np.array(target)) < np.linalg.norm(np.array(root.point) - np.array(target)):
+        next_best = root
+    else:
+        next_best = best
+
+    if target[axis] < root.point[axis]:
+        next_branch = root.left
+    else:
+        next_branch = root.right
+
+    return closest_point(next_branch, target, depth + 1, next_best)
+
+def find_nearest_neighbor(points, target):
+    kdtree = build_kdtree(points)
+    closest = closest_point(kdtree, target)
+    return closest.point if closest else None
 def find_analogy(analogies, embeddings):
     results = []
+    
+    points = list(embeddings.values())
+    
     for analogy in analogies:
-        analogy=analogy.split()
+        analogy = analogy.split()
         if len(analogy) != 4:
-            continue  #Pour éviter les lignes mal formées mais il ne devrait plus avoir de soucis
+            continue
         word1, word2, word3, expected_word = analogy
         if word1 in embeddings and word2 in embeddings and word3 in embeddings:
-            #Calculer du prolongement de mots à deviner
             embedding1 = embeddings[word1]
             embedding2 = embeddings[word2]
             embedding3 = embeddings[word3]
-            # predicted_embedding = embedding1 - embedding2 + embedding3
             predicted_embedding = embedding2 - embedding1 + embedding3
-
-
-            #Trouver le mot le plus proche avec la distance euclidienne
-            min_distance = float('inf')
+            
+            closest_embedding = find_nearest_neighbor(points, predicted_embedding)
+            
             closest_word = None
             for word, embedding in embeddings.items():
-                if word not in [word1, word2, word3]:
-                    distance = euclidean_distance(predicted_embedding,embedding)
-                    if distance < min_distance:
-                        min_distance = distance
-                        closest_word = word
+                if np.array_equal(embedding, closest_embedding):
+                    closest_word = word
+                    break
+                    
             results.append((word1, word2, word3, expected_word, closest_word))
-
+    
     return results
+
 
 
 
@@ -309,7 +372,7 @@ start_time = time.time()
 model=load_embeddings('model.txt')
 
 analogies_files = ['analogies/analogies_conjuguaison.txt', 'analogies/analogies_gender.txt', 'analogies/analogies_localisation.txt', 'analogies/analogies_others.txt']
-outputs_files = ['outputs/outputs_unique/analogies_conjuguaison.txt', 'outputs/outputs_unique/analogies_gender.txt', 'outputs/outputs_unique/analogies_localisation.txt', 'outputs/outputs_unique/analogies_others.txt']
+outputs_files = ['outputs/outputs_kd/analogies_conjuguaison.txt', 'outputs/outputs_kd/analogies_gender.txt', 'outputs/outputs_kd/analogies_localisation.txt', 'outputs/outputs_kd/analogies_others.txt']
 outputs_count=-1
 for file_path in analogies_files:
     outputs_count=outputs_count+1
@@ -328,6 +391,7 @@ print(f"Temps d'exécution : {execution_time} secondes")
 
 
 #Partie ou on analyse les 10 mots les plus proches de l'analogie
+#Réecriture de la fonction find_analogy() pour obtenir les 10 mots les plus proches
 def find_analogy_10(analogies, embeddings):
     results = []
     for analogy in analogies:
@@ -359,25 +423,24 @@ def find_analogy_10(analogies, embeddings):
 
 start_time = time.time()
 
-# model=load_embeddings('model.txt')
 
-analogies_files = ['analogies/analogies_conjuguaison.txt', 'analogies/analogies_gender.txt', 'analogies/analogies_localisation.txt', 'analogies/analogies_others.txt']
-# analogies_files=['analogies/analogies_conjuguaison.txt']
-outputs_files = ['outputs/outputs_10/analogies_conjuguaison.txt', 'outputs/outputs_10/analogies_gender.txt', 'outputs/outputs_10/analogies_localisation.txt', 'outputs/outputs_10/analogies_others.txt']
-# outputs_files=['outputs/outputs_10/analogies_conjuguaison.txt']
-outputs_count=-1
-for file_path in analogies_files:
-    outputs_count=outputs_count+1
-    with open(file_path, 'r', encoding='utf-8') as analogies_file:
-        analogies = [line.strip() for line in analogies_file.readlines()]
-    analogies = [item.lower() for item in analogies]
-    results = find_analogy_10(analogies, model)
-    with open(outputs_files[outputs_count], 'w',encoding='utf-8') as file:
-        for result in results:
-            closest_words_str = ', '.join([f"{word} ({distance:.3f})" for word, distance in result[4]])
-            file.write(f'{result[1]} - {result[0]} + {result[2]} = {closest_words_str} (Expected: {result[3]})\n')
+# analogies_files = ['analogies/analogies_conjuguaison.txt', 'analogies/analogies_gender.txt', 'analogies/analogies_localisation.txt', 'analogies/analogies_others.txt']
+# # analogies_files=['analogies/analogies_conjuguaison.txt']
+# outputs_files = ['outputs/outputs_10/analogies_conjuguaison.txt', 'outputs/outputs_10/analogies_gender.txt', 'outputs/outputs_10/analogies_localisation.txt', 'outputs/outputs_10/analogies_others.txt']
+# # outputs_files=['outputs/outputs_10/analogies_conjuguaison.txt']
+# outputs_count=-1
+# for file_path in analogies_files:
+#     outputs_count=outputs_count+1
+#     with open(file_path, 'r', encoding='utf-8') as analogies_file:
+#         analogies = [line.strip() for line in analogies_file.readlines()]
+#     analogies = [item.lower() for item in analogies]
+#     results = find_analogy_10(analogies, model)
+#     with open(outputs_files[outputs_count], 'w',encoding='utf-8') as file:
+#         for result in results:
+#             closest_words_str = ', '.join([f"{word} ({distance:.3f})" for word, distance in result[4]])
+#             file.write(f'{result[1]} - {result[0]} + {result[2]} = {closest_words_str} (Expected: {result[3]})\n')
 
     
-end_time = time.time()
-execution_time = end_time - start_time
-print(f"Temps d'exécution : {execution_time} secondes")
+# end_time = time.time()
+# execution_time = end_time - start_time
+# print(f"Temps d'exécution : {execution_time} secondes")

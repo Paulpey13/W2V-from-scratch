@@ -12,6 +12,8 @@ The script includes the processes of text tokenization, embedding initialization
 
 The second part is about words analogy and how to find those using vector computations. The corpus to find the analogies can be found at http://vectors.nlpl.eu/repository/ (French CoNLL17 corpus, number 43).
 
+You may have to change some files paths into main.py if necessary.
+
 ## Requirements
 
 - Python 3
